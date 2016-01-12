@@ -3,6 +3,8 @@ require_relative 'cursorable.rb'
 class Display
   include Cursorable
 
+  attr_accessor :cursor_pos
+
   def initialize(board, game)
     @board = board
     @cursor_pos = [0,0]
@@ -11,6 +13,9 @@ class Display
 
   def render
     system('clear')
+
+    puts "#{@game.players[@game.turn].name} (#{@game.turn})"
+    puts "it's your turn."
 
     valid_moves_of_selected_piece = @board[@board.selected].valid_moves if @board.selected
 
@@ -38,6 +43,6 @@ class Display
       end
       puts
     end
-    puts "Check!" if @board.in_check?(@game.turn)
+    puts "Check!" if @board.in_check?(@game.turn) && !@board.checkmate?(@game.turn)
   end
 end

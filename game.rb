@@ -2,23 +2,39 @@ require_relative 'board.rb'
 require_relative 'display.rb'
 require_relative 'pieces.rb'
 require_relative 'errors.rb'
+require_relative 'player.rb'
+require_relative 'humanplayer.rb'
+require_relative 'computerplayer.rb'
 require 'colorize'
 require 'byebug'
 
 class Game
-  attr_reader :board, :selected, :turn
-  def initialize
+  attr_reader :board, :selected, :turn, :players
+
+  def initialize(player1, player2)
     @board = Board.new
     @display = Display.new(@board, self)
     @turn = :white
+    @players = {:white => player1, :black => player2}
+    setup_players
+  end
 
+  def setup_players
+    @players[:white].set_color(:white)
+    @players[:black].set_color(:black)
+    @players[:white].board = @board
+    @players[:black].board = @board
+    @players[:white].display = @display
+    @players[:black].display = @display
   end
 
   def play
     @display.render
     until over?
+
       begin
-        user_input = @display.get_input
+        #user_input = @players[@turn].get_input
+        user_input = @players[@turn].get_input
         update_game(user_input) unless user_input.nil?
       rescue StandardError => error
         puts error.message
@@ -29,7 +45,7 @@ class Game
 
     if @winner != :tie
       puts "checkmate!"
-      puts "the winner is: #{@winner}"
+      puts "the winner is: #{@players[@winner].name} (#{@winner})"
     else
       puts "tie game"
     end
@@ -37,6 +53,7 @@ class Game
   end
 
   def update_game(input)
+
 
     if @board.selected == false
       unless !@board[input].nil? && @board[input].color == @turn
@@ -57,6 +74,8 @@ class Game
         switch_player
       end
     end
+
+
   end
 
   def switch_player
@@ -77,5 +96,7 @@ class Game
 end
 
 if __FILE__ == $PROGRAM_NAME
-  Game.new.play
+  p1 = HumanPlayer.new("Player 1")
+  p2 = ComputerPlayer.new("Player 2")
+  Game.new(p1, p2).play
 end
