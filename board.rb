@@ -25,10 +25,27 @@ class Board
   end
 
   def make_move(from_pos, to_pos)
+    make_castle_move(from_pos, to_pos) if castle_move?(from_pos, to_pos)
     self[to_pos] = self[from_pos]
     self[to_pos].pos = to_pos
     self[to_pos].has_moved = true
     self[from_pos] = nil
+  end
+
+  def castle_move?(from_pos, to_pos)
+    self[from_pos].is_a?(King) && (to_pos[1] - from_pos[1]).abs > 1
+  end
+
+  def make_castle_move(from_pos, to_pos)
+    if to_pos[1] == 2
+      rook_from_pos = [to_pos[0], 0]
+      rook_to_pos = [to_pos[0], 3]
+    else
+      rook_from_pos = [to_pos[0], 7]
+      rook_to_pos = [to_pos[0], 5]
+    end
+    make_move(rook_from_pos, rook_to_pos)
+
   end
 
   def find_king(color)
@@ -65,7 +82,7 @@ class Board
   end
 
   def fill_back_row(color)
-    row_number = color == :black ? 0 : 7
+    row = color == :black ? 0 : 7
 
     pieces = [  Rook,
                 Knight,
@@ -79,15 +96,15 @@ class Board
 
 
     8.times do |col|
-      @grid[row_number][col] = pieces[col].new(self, [row_number, col], color)
+      @grid[row][col] = pieces[col].new(self, [row, col], color)
     end
   end
 
   def fill_pawns(color)
-    row_number = color == :black ? 1 : 6
+    row = color == :black ? 1 : 6
 
     8.times do |col|
-      @grid[row_number][col] = Pawn.new(self, [row_number, col], color)
+      @grid[row][col] = Pawn.new(self, [row, col], color)
     end
   end
 

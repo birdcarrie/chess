@@ -16,16 +16,9 @@ class Game
     @display = Display.new(@board, self)
     @turn = :white
     @players = {:white => player1, :black => player2}
-    setup_players
-  end
-
-  def setup_players
-    @players[:white].set_color(:white)
-    @players[:black].set_color(:black)
-    @players[:white].board = @board
-    @players[:black].board = @board
-    @players[:white].display = @display
-    @players[:black].display = @display
+    @players.each do |color, player|
+      player.setup_player(color, @board, @display)
+    end
   end
 
   def play
@@ -33,7 +26,6 @@ class Game
     until over?
 
       begin
-        #user_input = @players[@turn].get_input
         user_input = @players[@turn].get_input
         update_game(user_input) unless user_input.nil?
       rescue StandardError => error
@@ -54,28 +46,43 @@ class Game
 
   def update_game(input)
 
-
     if @board.selected == false
-      unless !@board[input].nil? && @board[input].color == @turn
-        raise InvalidSelectionError.new "Select your own piece!"
-      else
-        @board.selected = input
-      end
+      select_pos_to_move(input)
     else
       if input == @board.selected
-        @board.selected = false
-        return
-      end
-      unless @board[@board.selected].valid_moves.include?(input)
-        raise InvalidMoveError.new "You can't move there!"
-      else
+        unselect
+      elsif @board[@board.selected].valid_moves.include?(input)
         @board.make_move(@board.selected, input)
         @board.selected = false
         switch_player
+      else
+        raise_invalid_move_error(input)
       end
     end
+  end
 
+  def raise_invalid_move_error(pos)
+    if @board[@board.selected].get_possible_moves.include?(pos)
+      raise PutSelfInCheckError.new(
+      "You can't move there, \nit will leave you in check"
+      )
+    else
+      raise InvalidMoveError.new(
+      "You can't move there, \nthat piece doesn't move like that!"
+      )
+    end
+  end
 
+  def select_pos_to_move(pos)
+    if !@board[pos].nil? && @board[pos].color == @turn
+      @board.selected = pos
+    else
+      raise InvalidSelectionError.new "Select your own piece!"
+    end
+  end
+
+  def unselect
+    @board.selected = false
   end
 
   def switch_player
@@ -98,5 +105,6 @@ end
 if __FILE__ == $PROGRAM_NAME
   p1 = HumanPlayer.new("Player 1")
   p2 = ComputerPlayer.new("Player 2")
+  p3 = HumanPlayer.new("Player 3")
   Game.new(p1, p2).play
 end

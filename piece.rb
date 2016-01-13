@@ -13,6 +13,7 @@ class Piece
   end
 
   def valid_moves
+
     self.get_possible_moves.select do |move|
       new_board = @board.dup
       new_board.make_move(self.pos, move)
@@ -34,13 +35,13 @@ class SlidingPiece < Piece
     possible_directions.each do |direction|
       d_row, d_col = direction
       scale = 1
-      test_position = [row + d_row, col + d_col]
-      until !@board.in_bounds?(test_position)
-        break if !@board[test_position].nil? && @board[test_position].color == self.color
-        moves << test_position
-        break if !@board[test_position].nil? && @board[test_position].color != self.color
+      new_pos = [row + d_row, col + d_col]
+      while @board.in_bounds?(new_pos)
+        break if !@board[new_pos].nil? && @board[new_pos].color == self.color
+        moves << new_pos
+        break if !@board[new_pos].nil? && @board[new_pos].color != self.color
         scale += 1
-        test_position = [row + d_row * scale, col + d_col * scale]
+        new_pos = [row + d_row * scale, col + d_col * scale]
       end
 
     end

@@ -28,8 +28,10 @@ class ComputerPlayer < Player
     end
 
     @board.pieces(@color).shuffle.each do |piece|
-      sleep(2) if !piece.valid_moves.empty? 
-      return [piece.pos, piece.valid_moves.sample] if !piece.valid_moves.empty?
+      unless piece.valid_moves.empty?
+        sleep(2)
+        return [piece.pos, piece.valid_moves.sample]
+      end
     end
   end
 

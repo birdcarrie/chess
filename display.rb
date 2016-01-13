@@ -16,8 +16,9 @@ class Display
 
     puts "#{@game.players[@game.turn].name} (#{@game.turn})"
     puts "it's your turn."
-
-    valid_moves_of_selected_piece = @board[@board.selected].valid_moves if @board.selected
+    selected_pos = @board.selected
+    selected_piece = @board[selected_pos] if selected_pos
+    possible_moves = selected_piece.valid_moves if selected_pos
 
     (0..7).each do |i|
       (0..7).each do |j|
@@ -28,11 +29,11 @@ class Display
           cell = "   "
         end
 
-        if [i, j] == @board.selected
+        if [i, j] == selected_pos
           print cell.colorize( :background => :red)
         elsif @cursor_pos == [i, j]
           print cell.colorize( :background => :green)
-        elsif @board.selected && valid_moves_of_selected_piece.include?([i, j])
+        elsif selected_pos && possible_moves.include?([i, j])
           print cell.colorize( :background => :yellow)
         elsif (i+j).even?
           print cell.colorize( :background => :blue)
@@ -43,6 +44,8 @@ class Display
       end
       puts
     end
-    puts "Check!" if @board.in_check?(@game.turn) && !@board.checkmate?(@game.turn)
+    if @board.in_check?(@game.turn)
+      puts "Check!" unless @board.checkmate?(@game.turn)
+    end
   end
 end

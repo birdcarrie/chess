@@ -6,11 +6,12 @@ class Player
     @color = nil
     @board = nil
     @display = nil
-
   end
 
-  def set_color(color)
-    @color = color
+  def setup_player(color, board, display)
+    self.board = board
+    self.display = display
+    self.color = color
     @other_color = @color == :white ? :black : :white
   end
 end
