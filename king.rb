@@ -21,16 +21,19 @@ class King < SteppingPiece
     return [] if @has_moved
     castles = []
     row = @pos[0]
+
     if !@board[[row, 0]].nil? && !@board[[row, 0]].has_moved
       if [1,2,3].all? { |col| @board[[row, col]].nil?}
           castles << [row, 2]
       end
     end
+
     if !@board[[row, 7]].nil? && !@board[[row, 7]].has_moved
       if [5, 6].all? { |col| @board[[row, col]].nil?}
          castles << [row, 6]
       end
     end
+
     castles
   end
 

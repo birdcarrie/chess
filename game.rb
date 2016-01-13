@@ -1,12 +1,4 @@
-require_relative 'board.rb'
-require_relative 'display.rb'
-require_relative 'pieces.rb'
-require_relative 'errors.rb'
-require_relative 'player.rb'
-require_relative 'humanplayer.rb'
-require_relative 'computerplayer.rb'
-require 'colorize'
-require 'byebug'
+require_relative 'game_dependency.rb'
 
 class Game
   attr_reader :board, :selected, :turn, :players

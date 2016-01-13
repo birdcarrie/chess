@@ -54,7 +54,6 @@ class Board
         return piece.pos
       end
     end
-    raise "No King Found"
   end
 
   def pieces(color = nil)
